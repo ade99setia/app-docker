@@ -1,0 +1,79 @@
+services:
+  # =========================
+  # App: PHP-FPM (CodeIgniter 4)
+  # =========================
+  app_undangan_pernikahan:
+    image: ghcr.io/ade99setia/undangan_pernikahan_app:latest
+    container_name: undangan_pernikahan_app
+    env_file:
+      - ./.env
+    volumes:
+      - public_app:/var/www/html/public
+      - uploads_data:/var/www/html/writable/uploads
+      - private_data:/var/www/html/private
+    networks:
+      - app_network_undangan_pernikahan
+    restart: unless-stopped
+
+  # =========================
+  # Web: Nginx
+  # =========================
+  web_undangan_pernikahan:
+    image: nginx:alpine
+    container_name: undangan_pernikahan_web
+    ports:
+      - "8082:80"
+    volumes:
+      - ./default.conf:/etc/nginx/conf.d/default.conf
+      - public_app:/var/www/html/public
+      - uploads_data:/var/www/html/writable/uploads
+      - private_data:/var/www/html/private
+    depends_on:
+      - app_undangan_pernikahan
+    networks:
+      - app_network_undangan_pernikahan
+    restart: unless-stopped
+
+  # =========================
+  # Database: MySQL
+  # =========================
+  db_undangan_pernikahan:
+    image: mysql:8.0
+    container_name: undangan_pernikahan_db
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: undangan_pernikahan
+      MYSQL_USER: ci4_user
+      MYSQL_PASSWORD: secret
+    ports:
+      - "3307:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      - app_network_undangan_pernikahan
+    restart: unless-stopped
+
+  # =========================
+  # Cloudflare Tunnel
+  # =========================
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    command: tunnel run --token eyJhIjoiMzU4MmM4Y2MzOTU4MDA0NWI4YTc5YTRiYTdlNTk4MzkiLCJ0IjoiYjMyMTg2MzMtZGMzNC00YTI0LWFiN2UtNmExZWE4NjE3NzZmIiwicyI6Ik16STFZbVU0T0RZdFl6QXpZeTAwWkdKaExXRm1NalV0T1RabVpUUXpNbVptTWpGaE56SmpNVFJtT1RrdE5UWTJZeTAwTlRjd0xUa3lZakF0TnpabFpXWmtaR0UxTkdNdyJ9
+    depends_on:
+      - web_undangan_pernikahan
+    networks:
+      - app_network_undangan_pernikahan
+    restart: unless-stopped
+
+# =========================
+# Networks & Volumes
+# =========================
+networks:
+  app_network_undangan_pernikahan:
+    driver: bridge
+
+volumes:
+  db_data:
+  uploads_data:
+  private_data:
+  public_app:
