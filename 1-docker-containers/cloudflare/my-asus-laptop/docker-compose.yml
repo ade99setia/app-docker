@@ -1,0 +1,12 @@
+services:
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    container_name: cloudflared_my_asus_laptop
+    command: tunnel --no-autoupdate run --token eyJhIjoiMzU4MmM4Y2MzOTU4MDA0NWI4YTc5YTRiYTdlNTk4MzkiLCJ0IjoiNzA0NmU0M2QtMzgyMC00Zjg2LWE5NzktMTI5ODY4MzAwYzM4IiwicyI6IlkyWmlaVEF5TlRFdE9ETXpNUzAwTXpOaExXSTVaamN0TkRReE9UUTBNVFl6Tnpka1pESXdPV0ZpT1RRdE5URmlaQzAwTXpRM0xUaGtaREl0T1dOa1pETmxOalkwWXpVdyJ9 --protocol http2
+    networks:
+      - shared_web_network
+    restart: unless-stopped
+
+networks:
+  shared_web_network:
+    external: true

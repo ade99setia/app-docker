@@ -1,0 +1,79 @@
+services:
+  # =========================
+  # App: PHP-FPM CI4
+  # =========================
+  app_undangan_pernikahan:
+    image: ghcr.io/ade99setia/undangan_pernikahan_app:latest
+    container_name: undangan_pernikahan_app
+    env_file:
+      - .env # Pastikan file di host bernama .env (bukan 'env' tanpa titik)
+    volumes:
+      # Volume untuk data dinamis
+      - data_private:/var/www/html/private
+
+      # Volume writable untuk uploads, logs, cache, dan session (CI4)
+      - data_uploads:/var/www/html/writable/uploads
+      - data_logs:/var/www/html/writable/logs
+      - data_cache:/var/www/html/writable/cache
+      - data_session:/var/www/html/writable/session
+    networks:
+      - undangan_pernikahan_network
+    restart: unless-stopped
+
+  # =========================
+  # Web: Nginx
+  # =========================
+  web_undangan_pernikahan:
+    image: nginx:alpine
+    container_name: undangan_pernikahan_web
+    ports:
+      - "8082:80"
+    volumes:
+      - ./default.conf:/etc/nginx/conf.d/default.conf:ro
+      # Nginx butuh akses ke folder public aplikasi untuk serve CSS, JS, dan Images
+      # Kita bisa mount folder public dari host atau gunakan volume public_app
+      - .:/var/www/html:ro 
+      # Nginx juga butuh akses agar bisa serve gambar secara langsung (cepat)
+      - data_uploads:/var/www/html/writable/uploads:ro
+    depends_on:
+      - app_undangan_pernikahan
+    networks:
+      - undangan_pernikahan_network
+      - shared_web_network
+    restart: unless-stopped
+
+  # =========================
+  # Database: MySQL
+  # =========================
+  db_undangan_pernikahan:
+    image: mysql:8.0
+    container_name: undangan_pernikahan_db
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: undangan_pernikahan
+      MYSQL_USER: ci4_user
+      MYSQL_PASSWORD: secret
+    ports:
+      - "3307:3306"
+    volumes:
+      - data_db:/var/lib/mysql:rw
+    networks:
+      - undangan_pernikahan_network
+    restart: unless-stopped
+
+# =========================
+# Networks & Volumes
+# =========================
+networks:
+  undangan_pernikahan_network:
+    driver: bridge
+  shared_web_network:
+    external: true
+
+volumes:
+  data_uploads:
+  data_private:
+  data_logs:
+  data_cache:
+  data_session:
+  data_db:

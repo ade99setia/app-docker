@@ -1,0 +1,12 @@
+services:
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    container_name: cloudflared_idn_server
+    command: tunnel --no-autoupdate run --token eyJhIjoiMzU4MmM4Y2MzOTU4MDA0NWI4YTc5YTRiYTdlNTk4MzkiLCJ0IjoiMmE3OThiN2YtMTlmYi00MTE4LWI3MzYtZTA3NWIzNTRkOTUzIiwicyI6IjlmQWNiZU1iSkdqeG1OdzFtZ0pWaVVxcjNoc21zMzNacXpkZjBSZzZTcXc9In0= --protocol http2
+    networks:
+      - shared_web_network
+    restart: unless-stopped
+
+networks:
+  shared_web_network:
+    external: true

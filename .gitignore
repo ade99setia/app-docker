@@ -1,1 +1,8 @@
-0-docker-images
+# =========================
+# Docker Images & Archives
+# =========================
+0-docker-images/
+
+*.zip
+*.tar
+*.tar.gz

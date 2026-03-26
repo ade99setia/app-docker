@@ -1,0 +1,18 @@
+services:
+  web_portofolio:
+    image: ghcr.io/ade99setia/portofolio:latest
+    container_name: portofolio_web
+    restart: unless-stopped
+    ports:
+      - "8083:80"
+    volumes:
+      - ./default.conf:/etc/nginx/conf.d/default.conf
+    networks:
+      - portfolio_network
+      - shared_web_network
+
+networks:
+  portfolio_network:
+    driver: bridge
+  shared_web_network:
+    external: true

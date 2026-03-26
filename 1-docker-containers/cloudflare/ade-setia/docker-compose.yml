@@ -1,0 +1,12 @@
+services:
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    container_name: cloudflared_ade_setia
+    command: tunnel --no-autoupdate run --token eyJhIjoiMzU4MmM4Y2MzOTU4MDA0NWI4YTc5YTRiYTdlNTk4MzkiLCJ0IjoiYjMyMTg2MzMtZGMzNC00YTI0LWFiN2UtNmExZWE4NjE3NzZmIiwicyI6Ik16STFZbVU0T0RZdFl6QXpZeTAwWkdKaExXRm1NalV0T1RabVpUUXpNbVptTWpGaE56SmpNVFJtT1RrdE5UWTJZeTAwTlRjd0xUa3lZakF0TnpabFpXWmtaR0UxTkdNdyJ9 --protocol http2
+    networks:
+      - shared_web_network
+    restart: unless-stopped
+    
+networks:
+  shared_web_network:
+    external: true
