@@ -27,20 +27,20 @@ docker save -o mysql_8.0.tar mysql:8.0
 
 Langkah ini bertujuan memasukkan aset lokal (musik, foto, dll) ke dalam volume Docker agar data tersebut ikut terbawa saat di-backup.
 
-### 2a. Jalankan Container & Suntik Data (Injection)
+### 2a. Jalankan Container & Import Data (Injection)
 *PENTING: Ganti `undangan-pernikahan` dengan nama folder project Anda jika berbeda.*
 
 ~~~powershell
 # 1. Jalankan semua service sementara agar volume terbentuk
-docker-compose up -d
+docker compose up -d
 
-# 2. Suntik folder 'private' (Music/Images) dari Windows ke volume Docker
+# 2. Import folder 'private' (Music/Images) dari Windows ke volume Docker
 docker run --rm -v ${PWD}/private:/from -v undangan-pernikahan_data_private:/to alpine sh -c "cp -av /from/. /to/"
 
-# 3. Suntik folder 'writable/uploads' dari Windows ke volume Docker
+# 3. Import folder 'writable/uploads' dari Windows ke volume Docker
 docker run --rm -v ${PWD}/writable/uploads:/from -v undangan-pernikahan_data_uploads:/to alpine sh -c "cp -av /from/. /to/"
 
-# 4. FIX PERMISSION: Agar PHP-FPM bisa membaca file yang baru disuntik
+# 4. FIX PERMISSION: Agar PHP-FPM bisa membaca file yang baru diImport
 docker exec -u root undangan_pernikahan_app chown -R www-data:www-data /var/www/html/private /var/www/html/writable
 ~~~
 
@@ -55,6 +55,13 @@ docker run --rm -v undangan-pernikahan_data_uploads:/from -v ${PWD}:/to alpine s
 
 # 3. Backup Database (SQL Dump) dari container DB
 docker exec undangan_pernikahan_db mysqldump -u root -proot undangan_pernikahan > backup_undangan_pernikahan.sql
+~~~
+
+Backup Data SQL di Local Windows
+~~~bash
+docker exec bdn_karanganyar_db `
+  sh -c 'exec mysqldump --single-transaction --quick -u root -proot bdn_karanganyar' `
+  > backup_$(Get-Date -Format "yyyyMMdd_HHmmss").sql
 ~~~
 
 ---
@@ -83,11 +90,14 @@ Pindahkan semua file di atas ke satu folder di server, lalu jalankan perintah be
 ~~~bash
 # 1. Load semua image ke sistem Docker server
 docker load -i undangan_pernikahan_app.tar
+docker image prune -f
+
+# opsional
 docker load -i nginx_alpine.tar
 docker load -i mysql_8.0.tar
 
 # 2. Jalankan Container
-docker-compose up -d
+docker compose up -d
 ~~~
 
 ### 4b. Restore Volume Data (Aset Musik & Gambar)
@@ -105,6 +115,8 @@ docker exec -u root undangan_pernikahan_app chown -R www-data:www-data /var/www/
 
 ### 4c. Import Database
 
+### 4c. Backup & Import Database
+Sesuaikan nama file backup database:
 ~~~bash
 cat backup_undangan_pernikahan.sql | docker exec -i undangan_pernikahan_db mysql -u root -proot undangan_pernikahan
 ~~~
@@ -115,7 +127,7 @@ cat backup_undangan_pernikahan.sql | docker exec -i undangan_pernikahan_db mysql
 
 | Cek Lis | Perintah |
 | :--- | :--- |
-| Cek Status Container | `docker-compose ps` |
+| Cek Status Container | `docker compose ps` |
 | Cek Log Error PHP | `docker logs -f undangan_pernikahan_app` |
 | Cek Isi Tabel DB | `docker exec -it undangan_pernikahan_db mysql -u root -proot -e "USE undangan_pernikahan; SHOW TABLES;"` |
 

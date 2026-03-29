@@ -1,0 +1,78 @@
+services:
+  # ==========================================
+  # 1. EVOLUTION API (Core Mesin WA)
+  # ==========================================
+  api:
+    container_name: evolution_api
+    image: evoapicloud/evolution-api:latest
+    restart: always
+    depends_on:
+      - redis
+      - evolution_mysql
+    ports:
+      - "8080:8080" # Port API
+    volumes:
+      - evolution_instances:/evolution/instances
+    networks:
+      - evolution-net
+      - shared_web_network
+    environment: # Saya ubah jadi environment langsung agar Anda tidak perlu repot buat file .env
+      - SERVER_URL=http://localhost:8080
+      - AUTHENTICATION_TYPE=apikey
+      - AUTHENTICATION_API_KEY=KunciRahasiaSaya999
+      # Konfigurasi Database ke MySQL
+      - DATABASE_ENABLED=true
+      - DATABASE_PROVIDER=mysql
+      - DATABASE_CONNECTION_URI=mysql://wa_user:rahasiaWA123@evolution_mysql:3306/evolution_wa_db
+      # Konfigurasi Cache ke Redis
+      - CACHE_REDIS_ENABLED=true
+      - CACHE_REDIS_URI=redis://redis:6379
+      # Opsi Penyimpanan Data (Aktifkan sesuai kebutuhan)
+      - DATABASE_SAVE_DATA_CONTACTS=true
+      - DATABASE_SAVE_DATA_CHATS=true
+      - DATABASE_SAVE_DATA_MESSAGES=true
+
+  # ==========================================
+  # 2. REDIS (Untuk Cache Antrean Pesan)
+  # ==========================================
+  redis:
+    container_name: evolution_redis
+    image: redis:latest
+    restart: always
+    command: >
+      redis-server --appendonly yes
+    volumes:
+      - evolution_redis:/data
+    networks:
+      - evolution-net
+
+  # ==========================================
+  # 3. MYSQL (Pengganti Postgres)
+  # ==========================================
+  evolution_mysql:
+    container_name: evolution_mysql
+    image: mysql:8.0
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: evolution_wa_db
+      MYSQL_USER: wa_user
+      MYSQL_PASSWORD: rahasiaWA123
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - evolution-net
+
+# ==========================================
+# Volumes & Networks
+# ==========================================
+volumes:
+  evolution_instances:
+  evolution_redis:
+  mysql_data:
+
+networks:
+  evolution-net:
+    driver: bridge
+  shared_web_network:
+    external: true

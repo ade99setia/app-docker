@@ -1,0 +1,67 @@
+services:
+  # =========================
+  # App: PHP-FPM Laravel
+  # =========================
+  app_idn_solo:
+    image: ghcr.io/ade99setia/idn_solo_app:latest
+    container_name: idn_solo_app
+    env_file:
+      - ./.env
+    volumes:
+      - public_app:/var/www/html/public
+      - storage_app:/var/www/html/storage
+    networks:
+      - app_network_idn_solo
+      - shared_web_network
+    restart: unless-stopped
+
+  # =========================
+  # Web: Nginx
+  # =========================
+  web_idn_solo:
+    image: nginx:alpine
+    container_name: idn_solo_web
+    ports:
+      - "8084:80"  # akses localhost:8084
+    volumes:
+      - ./default.conf:/etc/nginx/conf.d/default.conf
+      - public_app:/var/www/html/public  # <- Nginx baca public folder dari app
+    depends_on:
+      - app_idn_solo
+    networks:
+      - app_network_idn_solo
+      - shared_web_network
+    restart: unless-stopped
+
+  # =========================
+  # Database: MySQL
+  # =========================
+  db_idn_solo:
+    image: mysql:8.0
+    container_name: idn_solo_db
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: idn_solo
+      MYSQL_USER: idn_user
+      MYSQL_PASSWORD: strongpassword123
+    ports:
+      - "3308:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      - app_network_idn_solo
+    restart: unless-stopped
+
+# =========================
+# Networks & Volumes
+# =========================
+networks:
+  app_network_idn_solo:
+    driver: bridge
+  shared_web_network:
+    external: true
+
+volumes:
+  public_app:
+  storage_app:
+  db_data:

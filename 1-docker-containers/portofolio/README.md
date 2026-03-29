@@ -41,10 +41,13 @@ Pindahkan semua file di atas ke satu folder di server, lalu jalankan perintah be
 ~~~bash
 # 1. Load semua image ke sistem Docker server
 docker load -i portofolio.tar
+docker image prune -f
+
+# opsional
 docker load -i nginx_alpine.tar
 
 # 2. Jalankan Container
-docker-compose up -d
+docker compose up -d
 ~~~
 
 ---
@@ -53,7 +56,7 @@ docker-compose up -d
 
 | Cek Lis | Perintah |
 | :--- | :--- |
-| Cek Status Container | `docker-compose ps` |
+| Cek Status Container | `docker compose ps` |
 | Cek Log Error | `docker logs -f portofolio` |
 
 **Akses Aplikasi:** Buka browser di `http://[IP-SERVER]:8083`
