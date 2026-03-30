@@ -1,0 +1,29 @@
+services:
+  registry:
+    image: registry:2
+    container_name: private_registry
+    ports:
+      - "5000:5000"
+    restart: always
+    environment:
+      - REGISTRY_STORAGE_DELETE_ENABLED=true
+      - REGISTRY_HTTP_HEADERS_Access-Control-Allow-Origin=['http://localhost:8086']
+      - REGISTRY_HTTP_HEADERS_Access-Control-Allow-Methods=['HEAD', 'GET', 'OPTIONS', 'DELETE']
+      - REGISTRY_HTTP_HEADERS_Access-Control-Allow-Headers=['Authorization', 'Accept', 'Cache-Control']
+      - REGISTRY_HTTP_HEADERS_Access-Control-Max-Age=[1728000]
+      - REGISTRY_HTTP_HEADERS_Access-Control-Allow-Credentials=[true]
+      - REGISTRY_HTTP_HEADERS_Access-Control-Expose-Headers=['Docker-Content-Digest']
+    volumes:
+      - ./data:/var/lib/registry
+
+  ui:
+    image: joxit/docker-registry-ui:latest
+    container_name: registry_ui
+    ports:
+      - "8086:80"
+    environment:
+      - REGISTRY_TITLE=Private Registry Ku
+      - REGISTRY_URL=http://localhost:5000
+      - DELETE_IMAGES=true
+    depends_on:
+      - registry

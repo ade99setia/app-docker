@@ -2,6 +2,8 @@
 # Docker Images & Archives
 # =========================
 0-docker-images/
+aic8800dc-main/
+1-docker-containers/registry/data/
 
 *.zip
 *.tar

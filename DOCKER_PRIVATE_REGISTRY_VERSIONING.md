@@ -57,8 +57,8 @@ v2.0.0 → perubahan besar
 # 🚀 Setup Private Registry (Server)
 
 ```bash
-mkdir -p ~/server-hosting/registry
-cd ~/server-hosting/registry
+mkdir -p ~/app-docker/1-docker-containers/registry
+cd ~/app-docker/1-docker-containers/registry
 ```
 
 `docker-compose.yml`
@@ -71,8 +71,28 @@ services:
     ports:
       - "5000:5000"
     restart: always
+    environment:
+      - REGISTRY_STORAGE_DELETE_ENABLED=true
+      - REGISTRY_HTTP_HEADERS_Access-Control-Allow-Origin=['http://localhost:8086']
+      - REGISTRY_HTTP_HEADERS_Access-Control-Allow-Methods=['HEAD', 'GET', 'OPTIONS', 'DELETE']
+      - REGISTRY_HTTP_HEADERS_Access-Control-Allow-Headers=['Authorization', 'Accept', 'Cache-Control']
+      - REGISTRY_HTTP_HEADERS_Access-Control-Max-Age=[1728000]
+      - REGISTRY_HTTP_HEADERS_Access-Control-Allow-Credentials=[true]
+      - REGISTRY_HTTP_HEADERS_Access-Control-Expose-Headers=['Docker-Content-Digest']
     volumes:
       - ./data:/var/lib/registry
+
+  ui:
+    image: joxit/docker-registry-ui:latest
+    container_name: registry_ui
+    ports:
+      - "8086:80"
+    environment:
+      - REGISTRY_TITLE=Private Registry Ku
+      - REGISTRY_URL=http://localhost:5000
+      - DELETE_IMAGES=true
+    depends_on:
+      - registry
 ```
 
 Jalankan:
@@ -95,9 +115,15 @@ sudo nano /etc/docker/daemon.json
 ```
 Docker Engine
 ```json
-"insecure-registries": [
-  "100.110.141.44:5000"
-]
+{
+  "insecure-registries": [
+    "10.159.76.115:5000",
+    
+    "localhost:5000"
+    "10.159.76.115:5000",
+    "100.97.152.1:5000"
+  ]
+}
 ```
 Restart Docker
 ```bash
@@ -110,9 +136,11 @@ sudo systemctl restart docker
 Docker Desktop → Docker Engine
 
 ```json
-"insecure-registries": [
-  "100.110.141.44:5000"
-]
+  "insecure-registries": [
+    "10.159.76.115:5000",
+    "10.159.76.115:5000",
+    "100.97.152.1:5000"
+  ]
 ```
 
 Restart Docker
@@ -122,9 +150,11 @@ Restart Docker
 # 🏗️ Build Image (SemVer)
 
 ```bash
-docker build -t idn_solo_app:v1.0.0 .
-docker build -t idn_solo_app:v1.1.0 .
-docker build -t idn_solo_app:v1.1.1 .
+docker build -t ghcr.io/ade99setia/idn_solo_app:latest .
+
+docker build -t ghcr.io/ade99setia/idn_solo_app:v1.0.0 .
+docker build -t ghcr.io/ade99setia/idn_solo_app:v1.1.0 .
+docker build -t ghcr.io/ade99setia/idn_solo_app:v1.1.1 .
 ```
 
 ---
@@ -132,9 +162,11 @@ docker build -t idn_solo_app:v1.1.1 .
 # 🏷️ Tag ke Registry
 
 ```bash
-docker tag idn_solo_app:v1.0.0 100.110.141.44:5000/idn_solo_app:v1.0.0
-docker tag idn_solo_app:v1.1.0 100.110.141.44:5000/idn_solo_app:v1.1.0
-docker tag idn_solo_app:v1.1.1 100.110.141.44:5000/idn_solo_app:v1.1.1
+docker tag ghcr.io/ade99setia/idn_solo_app:latest 10.159.76.115:5000/idn_solo_app:latest
+
+docker tag ghcr.io/ade99setia/idn_solo_app:v1.0.0 10.159.76.115:5000/idn_solo_app:v1.0.0
+docker tag ghcr.io/ade99setia/idn_solo_app:v1.1.0 10.159.76.115:5000/idn_solo_app:v1.1.0
+docker tag ghcr.io/ade99setia/idn_solo_app:v1.1.1 10.159.76.115:5000/idn_solo_app:v1.1.1
 ```
 
 ---
@@ -142,9 +174,11 @@ docker tag idn_solo_app:v1.1.1 100.110.141.44:5000/idn_solo_app:v1.1.1
 # 📤 Push Image
 
 ```bash
-docker push 100.110.141.44:5000/idn_solo_app:v1.0.0
-docker push 100.110.141.44:5000/idn_solo_app:v1.1.0
-docker push 100.110.141.44:5000/idn_solo_app:v1.1.1
+docker push 10.159.76.115:5000/idn_solo_app:latest
+
+docker push 10.159.76.115:5000/idn_solo_app:v1.0.0
+docker push 10.159.76.115:5000/idn_solo_app:v1.1.0
+docker push 10.159.76.115:5000/idn_solo_app:v1.1.1
 ```
 
 ---
@@ -164,7 +198,7 @@ docker push 100.110.141.44:5000/idn_solo_app:v1.1.1
 Production
 
 ```yaml
-image: 100.110.141.44:5000/idn_solo_app:v1.0.0
+image: 10.159.76.115:5000/idn_solo_app:v1.0.0
 ports:
   - "8084:80"
 ```
@@ -172,7 +206,7 @@ ports:
 Beta
 
 ```yaml
-image: 100.110.141.44:5000/idn_solo_app:v1.1.0
+image: 10.159.76.115:5000/idn_solo_app:v1.1.0
 ports:
   - "8085:80"
 ```
@@ -182,10 +216,15 @@ ports:
 # 🔄 Update Versi
 
 ```bash
-docker pull 100.110.141.44:5000/idn_solo_app:v1.1.0
+docker pull 10.159.76.115:5000/idn_solo_app:v1.1.0
 docker compose up -d
 ```
 
+
+```bash
+docker pull localhost:5000/idn_solo_app:latest
+docker compose up -d
+```
 ---
 
 # ⏪ Rollback Cepat
@@ -230,7 +269,7 @@ switch production
 # 🔎 Cek Image di Registry
 
 ```bash
-curl http://100.110.141.44:5000/v2/_catalog
+curl http://10.159.76.115:5000/v2/_catalog
 ```
 
 ---
@@ -249,26 +288,29 @@ Laptop:
 
 ```bash
 # 1. Build image di lokal (beri tag versi spesifik)
-docker build -t idn_solo_app:v1.2.0 .
+docker build -t ghcr.io/ade99setia/idn_solo_app:v1.2.0 .
 
 # 2. Beri tag untuk Registry Pribadi (Versi Spesifik)
-docker tag idn_solo_app:v1.2.0 100.110.141.44:5000/idn_solo_app:v1.2.0
+docker tag ghcr.io/ade99setia/idn_solo_app:v1.2.0 10.159.76.115:5000/idn_solo_app:v1.2.0
 
 # 3. Beri tag untuk Registry Pribadi (Sebagai Latest)
-docker tag idn_solo_app:v1.2.0 100.110.141.44:5000/idn_solo_app:latest
+docker tag ghcr.io/ade99setia/idn_solo_app:v1.2.0 10.159.76.115:5000/idn_solo_app:latest
 
 # 4. Push keduanya ke server
-docker push 100.110.141.44:5000/idn_solo_app:v1.2.0
-docker push 100.110.141.44:5000/idn_solo_app:latest
+docker push 10.159.76.115:5000/idn_solo_app:v1.2.0
+docker push 10.159.76.115:5000/idn_solo_app:latest
 ```
 
 Server:
 
 ```bash
 # 1. Tarik image terbaru dari registry lokalmu
-docker pull 100.110.141.44:5000/idn_solo_app:latest
+docker pull 10.159.76.115:5000/idn_solo_app:latest
 
-# 2. Update container (Docker akan mendeteksi perubahan image)
+# 2. Tagging Ulang
+docker tag 10.159.76.115:5000/idn_solo_app:latest ghcr.io/ade99setia/idn_solo_app:latest
+
+# 3. Update container (Docker akan mendeteksi perubahan image)
 docker compose up -d
 ```
 
