@@ -38,57 +38,15 @@ Berikut dokumentasi kamu yang sudah **ditambahkan Private Docker Registry + UI**
 
 ---
 
-## 🐳 Private Docker Registry
-
-### 📌 Konfigurasi Service
-
-```yaml
-services:
-  registry:
-    image: registry:2
-    container_name: private_registry
-    ports:
-      - "5000:5000"
-    restart: always
-    environment:
-      - REGISTRY_STORAGE_DELETE_ENABLED=true
-      - REGISTRY_HTTP_HEADERS_Access-Control-Allow-Origin=['http://localhost:8086']
-      - REGISTRY_HTTP_HEADERS_Access-Control-Allow-Methods=['HEAD', 'GET', 'OPTIONS', 'DELETE']
-      - REGISTRY_HTTP_HEADERS_Access-Control-Allow-Headers=['Authorization', 'Accept', 'Cache-Control']
-      - REGISTRY_HTTP_HEADERS_Access-Control-Max-Age=[1728000]
-      - REGISTRY_HTTP_HEADERS_Access-Control-Allow-Credentials=[true]
-      - REGISTRY_HTTP_HEADERS_Access-Control-Expose-Headers=['Docker-Content-Digest']
-    volumes:
-      - ./data:/var/lib/registry
-
-  ui:
-    image: joxit/docker-registry-ui:latest
-    container_name: registry_ui
-    ports:
-      - "8086:80"
-    environment:
-      - REGISTRY_TITLE=Private Registry Ku
-      - REGISTRY_URL=http://localhost:5000
-      - DELETE_IMAGES=true
-    depends_on:
-      - registry
-```
-
-### 🧠 Penjelasan
-
-* **Port 5000** → API Docker Registry (push/pull image)
-* **Port 8086** → Web UI untuk melihat & hapus image
-* Menggunakan **CORS config** agar UI bisa akses registry
-* Mendukung **delete image** (`REGISTRY_STORAGE_DELETE_ENABLED=true`)
-* Data registry disimpan di volume `./data`
-
----
-
 # Shared Network for Cloudflare Tunnel
 
 ```bash
 # Hanya dijalankan sekali saja
 docker network create shared_web_network
+
+# Auto Service to User
+sudo loginctl enable-linger $USER
+loginctl show-user $USER | grep Linger
 ```
 
 ## 🕸️ Network Isolation

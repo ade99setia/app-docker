@@ -150,11 +150,11 @@ Restart Docker
 # 🏗️ Build Image (SemVer)
 
 ```bash
-docker build -t ghcr.io/ade99setia/idn_solo_app:latest .
+docker build -t ghcr.io/ade99setia/undangan_pernikahan_app:latest .
 
-docker build -t ghcr.io/ade99setia/idn_solo_app:v1.0.0 .
-docker build -t ghcr.io/ade99setia/idn_solo_app:v1.1.0 .
-docker build -t ghcr.io/ade99setia/idn_solo_app:v1.1.1 .
+docker build -t ghcr.io/ade99setia/undangan_pernikahan_app:v1.0.0 .
+docker build -t ghcr.io/ade99setia/undangan_pernikahan_app:v1.1.0 .
+docker build -t ghcr.io/ade99setia/undangan_pernikahan_app:v1.1.1 .
 ```
 
 ---
@@ -162,11 +162,11 @@ docker build -t ghcr.io/ade99setia/idn_solo_app:v1.1.1 .
 # 🏷️ Tag ke Registry
 
 ```bash
-docker tag ghcr.io/ade99setia/idn_solo_app:latest 10.159.76.115:5000/idn_solo_app:latest
+docker tag ghcr.io/ade99setia/undangan_pernikahan_app:latest 10.159.76.115:5000/undangan_pernikahan_app:latest
 
-docker tag ghcr.io/ade99setia/idn_solo_app:v1.0.0 10.159.76.115:5000/idn_solo_app:v1.0.0
-docker tag ghcr.io/ade99setia/idn_solo_app:v1.1.0 10.159.76.115:5000/idn_solo_app:v1.1.0
-docker tag ghcr.io/ade99setia/idn_solo_app:v1.1.1 10.159.76.115:5000/idn_solo_app:v1.1.1
+docker tag ghcr.io/ade99setia/undangan_pernikahan_app:v1.0.0 10.159.76.115:5000/undangan_pernikahan_app:v1.0.0
+docker tag ghcr.io/ade99setia/undangan_pernikahan_app:v1.1.0 10.159.76.115:5000/undangan_pernikahan_app:v1.1.0
+docker tag ghcr.io/ade99setia/undangan_pernikahan_app:v1.1.1 10.159.76.115:5000/undangan_pernikahan_app:v1.1.1
 ```
 
 ---
@@ -174,11 +174,11 @@ docker tag ghcr.io/ade99setia/idn_solo_app:v1.1.1 10.159.76.115:5000/idn_solo_ap
 # 📤 Push Image
 
 ```bash
-docker push 10.159.76.115:5000/idn_solo_app:latest
+docker push 10.159.76.115:5000/undangan_pernikahan_app:latest
 
-docker push 10.159.76.115:5000/idn_solo_app:v1.0.0
-docker push 10.159.76.115:5000/idn_solo_app:v1.1.0
-docker push 10.159.76.115:5000/idn_solo_app:v1.1.1
+docker push 10.159.76.115:5000/undangan_pernikahan_app:v1.0.0
+docker push 10.159.76.115:5000/undangan_pernikahan_app:v1.1.0
+docker push 10.159.76.115:5000/undangan_pernikahan_app:v1.1.1
 ```
 
 ---
@@ -198,7 +198,7 @@ docker push 10.159.76.115:5000/idn_solo_app:v1.1.1
 Production
 
 ```yaml
-image: 10.159.76.115:5000/idn_solo_app:v1.0.0
+image: 10.159.76.115:5000/undangan_pernikahan_app:v1.0.0
 ports:
   - "8084:80"
 ```
@@ -206,7 +206,7 @@ ports:
 Beta
 
 ```yaml
-image: 10.159.76.115:5000/idn_solo_app:v1.1.0
+image: 10.159.76.115:5000/undangan_pernikahan_app:v1.1.0
 ports:
   - "8085:80"
 ```
@@ -216,13 +216,13 @@ ports:
 # 🔄 Update Versi
 
 ```bash
-docker pull 10.159.76.115:5000/idn_solo_app:v1.1.0
+docker pull 10.159.76.115:5000/undangan_pernikahan_app:v1.1.0
 docker compose up -d
 ```
 
 
 ```bash
-docker pull localhost:5000/idn_solo_app:latest
+docker pull localhost:5000/undangan_pernikahan_app:latest
 docker compose up -d
 ```
 ---
@@ -246,7 +246,7 @@ docker compose up -d
 # 🧠 Workflow Deployment Aman
 
 ```
-build v1.2.0
+build v1.0.0
 push registry
 deploy beta
 testing
@@ -288,27 +288,29 @@ Laptop:
 
 ```bash
 # 1. Build image di lokal (beri tag versi spesifik)
-docker build -t ghcr.io/ade99setia/idn_solo_app:v1.2.0 .
+docker build -t ghcr.io/ade99setia/undangan_pernikahan_app:v1.0.0 .
+# Kalo mau sekalian latest di local
+docker build -t ghcr.io/ade99setia/undangan_pernikahan_app:v1.0.0 -t ghcr.io/ade99setia/undangan_pernikahan_app:latest .
 
 # 2. Beri tag untuk Registry Pribadi (Versi Spesifik)
-docker tag ghcr.io/ade99setia/idn_solo_app:v1.2.0 10.159.76.115:5000/idn_solo_app:v1.2.0
+docker tag ghcr.io/ade99setia/undangan_pernikahan_app:v1.0.0 10.159.76.115:5000/undangan_pernikahan_app:v1.0.0
 
 # 3. Beri tag untuk Registry Pribadi (Sebagai Latest)
-docker tag ghcr.io/ade99setia/idn_solo_app:v1.2.0 10.159.76.115:5000/idn_solo_app:latest
+docker tag ghcr.io/ade99setia/undangan_pernikahan_app:v1.0.0 10.159.76.115:5000/undangan_pernikahan_app:latest
 
 # 4. Push keduanya ke server
-docker push 10.159.76.115:5000/idn_solo_app:v1.2.0
-docker push 10.159.76.115:5000/idn_solo_app:latest
+docker push 10.159.76.115:5000/undangan_pernikahan_app:v1.0.0
+docker push 10.159.76.115:5000/undangan_pernikahan_app:latest
 ```
 
 Server:
 
 ```bash
 # 1. Tarik image terbaru dari registry lokalmu
-docker pull 10.159.76.115:5000/idn_solo_app:latest
+docker pull 10.159.76.115:5000/undangan_pernikahan_app:latest
 
 # 2. Tagging Ulang
-docker tag 10.159.76.115:5000/idn_solo_app:latest ghcr.io/ade99setia/idn_solo_app:latest
+docker tag 10.159.76.115:5000/undangan_pernikahan_app:latest ghcr.io/ade99setia/undangan_pernikahan_app:latest
 
 # 3. Update container (Docker akan mendeteksi perubahan image)
 docker compose up -d

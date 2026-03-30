@@ -47,13 +47,16 @@ docker exec bdn_karanganyar_db `
 *PENTING: Ganti `bdn-karanganyar` dengan nama folder project Anda jika berbeda.*
 
 ~~~powershell
-# 2. Compile Assets Frontend (Vite/Tailwind)
+# 0. Jalankan bila belum
+docker compose up -d
+
+# 1. Compile Assets Frontend (Vite/Tailwind)
 npm run build
 
-# 3. Import and Rebuild folder 'public' dari Windows ke volume Docker
+# 2. Import and Rebuild folder 'public' dari Windows ke volume Docker
 docker run --rm -v ${PWD}/public:/from -v bdn-karanganyar_public_app:/to alpine sh -c "rm -rf /to/* && cp -av /from/. /to/"
 
-# 4. Import folder 'storage' dari Windows ke volume Docker
+# 3. Import folder 'storage' dari Windows ke volume Docker
 docker run --rm -v ${PWD}/storage:/from -v bdn-karanganyar_storage_app:/to alpine sh -c "apk add --no-cache rsync && rsync -av --exclude='framework/cache/*' --exclude='framework/sessions/*' --exclude='framework/views/*.php' --exclude='logs/*.log' /from/ /to/"
 ~~~
 

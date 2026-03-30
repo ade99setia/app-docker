@@ -41,41 +41,45 @@ Contoh:
 
 # 🛠️ Cara 1 — Jalur Visual (Filebrowser) ⭐ Recommended
 
-Konsep:
-Memasang volume Laravel ke container Filebrowser sebagai **external volume**.
+Dokumentasi ini menjelaskan cara menggabungkan akses folder lokal (Home) dan Volume Docker (Laravel) ke dalam satu tampilan Filebrowser.
+
+## 🚀 Fitur yang Tersedia
+Setelah konfigurasi ini diterapkan, kamu bisa melakukan operasi berikut langsung dari browser:
+* ✅ **Upload & Download** file secara langsung.
+* ✅ **Delete** file/folder yang tidak diperlukan.
+* ✅ **Rename** folder untuk merapikan struktur.
+* ✅ **Edit** file (seperti `.env`, `.php`, `.html`) dengan editor bawaan.
+* ✅ **Drag & Drop** file dari komputer lokal ke server.
 
 ---
 
-## 1. Cek Nama Volume
+## 🛠️ Konfigurasi `docker-compose.yml`
 
-```bash
-docker volume ls
-```
-
-Contoh hasil:
-
-```
-idn-solo_public_app
-idn-solo_storage_app
-```
-
----
-
-## 2. Edit docker-compose Filebrowser
+Gunakan konfigurasi di bawah ini untuk menggabungkan akses folder Home dan Volume Laravel:
 
 ```yaml
 services:
   filebrowser:
-    image: filebrowser/filebrowser
-    container_name: filebrowser_app
+    image: filebrowser/filebrowser:latest
+    container_name: filebrowser
     ports:
-      - "8086:80"
+      - "8085:80"
     volumes:
-      - ./filebrowser-data:/srv/utama
-      - idn-solo_public_app:/srv/Laravel-Public
-      - idn-solo_storage_app:/srv/Laravel-Storage
-    restart: unless-stopped
+      # 1. Akses Folder Home (Lokal Server)
+      - /home/ade-setia:/srv/ade-setia
+      
+      # 2. Akses Volume External (Laravel)
+      - idn-solo_public_app:/srv/idn-solo_public_app
+      - idn-solo_storage_app:/srv/idn-solo_storage_app
+      
+      # 3. Database & Konfigurasi Filebrowser (Agar user/pass tidak reset)
+      - ./filebrowser.db:/database/filebrowser.db
+      
+    environment:
+      - FB_DATABASE=/database/filebrowser.db
+    restart: always
 
+# Deklarasi volume yang dibuat oleh project lain (Laravel)
 volumes:
   idn-solo_public_app:
     external: true
@@ -85,30 +89,34 @@ volumes:
 
 ---
 
-## 3. Restart Filebrowser
+## 📖 Penjelasan Mapping Volume
 
-```bash
-docker compose up -d
-```
+Konsep yang digunakan adalah `- [SUMBER]:[TAMPILAN DI UI]`. Semua yang diarahkan ke dalam folder `/srv/` di sisi kanan akan muncul sebagai folder utama di tampilan Filebrowser.
+
+| Sumber (Host/Volume) | Tampilan di Filebrowser | Keterangan |
+| :--- | :--- | :--- |
+| `/home/ade-setia` | `/ade-setia` | Folder home user di server lokal. |
+| `idn-solo_public_app` | `/idn-solo_public_app` | Folder public Laravel (Assets, Index, dll). |
+| `idn-solo_storage_app` | `/idn-solo_storage_app` | Folder storage Laravel (Logs, Uploads, dll). |
 
 ---
 
-## 4. Hasil
+## ⚙️ Cara Menerapkan Perubahan
 
-Di UI Filebrowser akan muncul:
+1.  Buka terminal di direktori file `docker-compose.yml` berada.
+2.  Hentikan container yang lama (jika ada):
+    ```bash
+    docker compose down
+    ```
+3.  Jalankan kembali dengan konfigurasi baru:
+    ```bash
+    docker compose up -d
+    ```
+4.  Buka browser di alamat `http://alamat-ip-server:8085`.
 
-```
-/Laravel-Public
-/Laravel-Storage
-```
+---
 
-Sekarang bisa:
-
-* upload file
-* delete file
-* rename folder
-* edit file
-* drag & drop
+> **Catatan:** Jika folder atau volume tidak muncul, pastikan nama volume di bagian `volumes: external: true` sudah sesuai dengan hasil dari perintah `docker volume ls`.
 
 ---
 
