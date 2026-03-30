@@ -4,6 +4,7 @@
 0-docker-images/
 aic8800dc-main/
 1-docker-containers/registry/data/
+1-docker-containers/filebrowser/
 
 *.zip
 *.tar

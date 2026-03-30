@@ -65,22 +65,43 @@ services:
     ports:
       - "8085:80"
     volumes:
-      # 1. Akses Folder Home (Lokal Server)
+      # Akses Folder Home (Lokal Server)
       - /home/ade-setia:/srv/ade-setia
-      
-      # 2. Akses Volume External (Laravel)
-      - idn-solo_public_app:/srv/idn-solo_public_app
-      - idn-solo_storage_app:/srv/idn-solo_storage_app
-      
-      # 3. Database & Konfigurasi Filebrowser (Agar user/pass tidak reset)
+
+      # Akses Personal Akun
+      - /home/ade-setia/personal/adzkiya/:/srv/personal/adzkiya
+
+      # Akses Volume bdn_karanganyar_app
+      - bdn-karanganyar_public_app:/srv/docker-volumes/bdn-karanganyar_public_app
+      - bdn-karanganyar_storage_app:/srv/docker-volumes/bdn-karanganyar_storage_app
+
+      # Akses Volume undangan_pernikahan_app
+      - undangan-pernikahan_data_private:/srv/docker-volumes/undangan-pernikahan_data_private
+      - undangan-pernikahan_data_writable:/srv/docker-volumes/undangan-pernikahan_data_writable
+
+      # Portofolio tidak ada volume
+
+      # Akses Volume idn_solo_app
+      - idn-solo_public_app:/srv/docker-volumes/idn-solo_public_app
+      - idn-solo_storage_app:/srv/docker-volumes/idn-solo_storage_app
+
+      # Database & Konfigurasi Filebrowser
       - ./filebrowser.db:/database/filebrowser.db
-      
+
     environment:
       - FB_DATABASE=/database/filebrowser.db
     restart: always
 
-# Deklarasi volume yang dibuat oleh project lain (Laravel)
+# Deklarasi volume yang dibuat oleh project lain
 volumes:
+  bdn-karanganyar_public_app:
+    external: true
+  bdn-karanganyar_storage_app:
+    external: true
+  undangan-pernikahan_data_private:
+    external: true
+  undangan-pernikahan_data_writable:
+    external: true
   idn-solo_public_app:
     external: true
   idn-solo_storage_app:
