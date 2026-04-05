@@ -1,0 +1,18 @@
+services:
+  cloudbeaver:
+    image: dbeaver/cloudbeaver:latest
+    container_name: cloudbeaver_db_manager
+    restart: always
+    ports:
+      - "8087:8978"
+    volumes:
+      - cloudbeaver_data:/opt/cloudbeaver/workspace
+    networks:
+      - shared_web_network
+
+volumes:
+  cloudbeaver_data:
+
+networks:
+  shared_web_network:
+    external: true

@@ -48,6 +48,7 @@ services:
       - db_data:/var/lib/mysql
     networks:
       - app_network_bdn_karanganyar
+      - shared_web_network
     restart: unless-stopped
 
 # =========================

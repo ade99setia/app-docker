@@ -50,6 +50,7 @@ services:
       - db_data:/var/lib/mysql
     networks:
       - app_network_idn_solo
+      - shared_web_network
     restart: unless-stopped
 
 # =========================

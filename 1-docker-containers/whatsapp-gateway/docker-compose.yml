@@ -2,32 +2,35 @@ services:
   # ==========================================
   # 1. EVOLUTION API (Core Mesin WA)
   # ==========================================
-  api:
+  evolution_api:
     container_name: evolution_api
     image: evoapicloud/evolution-api:latest
     restart: always
     depends_on:
       - redis
-      - evolution_mysql
+      - evolution_db
     ports:
-      - "8080:8080" # Port API
+      - "8080:8080"
     volumes:
       - evolution_instances:/evolution/instances
     networks:
       - evolution-net
       - shared_web_network
-    environment: # Saya ubah jadi environment langsung agar Anda tidak perlu repot buat file .env
+    environment:
       - SERVER_URL=http://localhost:8080
       - AUTHENTICATION_TYPE=apikey
       - AUTHENTICATION_API_KEY=KunciRahasiaSaya999
-      # Konfigurasi Database ke MySQL
+      
+      # Konfigurasi Database ke PostgreSQL
       - DATABASE_ENABLED=true
-      - DATABASE_PROVIDER=mysql
-      - DATABASE_CONNECTION_URI=mysql://wa_user:rahasiaWA123@evolution_mysql:3306/evolution_wa_db
+      - DATABASE_PROVIDER=postgresql
+      - DATABASE_CONNECTION_URI=postgresql://wa_user:rahasiaWA123@evolution_db:5432/evolution_wa_db?schema=public
+      
       # Konfigurasi Cache ke Redis
       - CACHE_REDIS_ENABLED=true
       - CACHE_REDIS_URI=redis://redis:6379
-      # Opsi Penyimpanan Data (Aktifkan sesuai kebutuhan)
+      
+      # Opsi Penyimpanan Data
       - DATABASE_SAVE_DATA_CONTACTS=true
       - DATABASE_SAVE_DATA_CHATS=true
       - DATABASE_SAVE_DATA_MESSAGES=true
@@ -39,29 +42,29 @@ services:
     container_name: evolution_redis
     image: redis:latest
     restart: always
-    command: >
-      redis-server --appendonly yes
+    command: redis-server --appendonly yes
     volumes:
       - evolution_redis:/data
     networks:
       - evolution-net
+      - shared_web_network
 
   # ==========================================
-  # 3. MYSQL (Pengganti Postgres)
+  # 3. POSTGRESQL (Lebih Stabil untuk Evolution)
   # ==========================================
-  evolution_mysql:
-    container_name: evolution_mysql
-    image: mysql:8.0
+  evolution_db:
+    container_name: evolution_db
+    image: postgres:15-alpine
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: evolution_wa_db
-      MYSQL_USER: wa_user
-      MYSQL_PASSWORD: rahasiaWA123
+      POSTGRES_USER: wa_user
+      POSTGRES_PASSWORD: rahasiaWA123
+      POSTGRES_DB: evolution_wa_db
     volumes:
-      - mysql_data:/var/lib/mysql
+      - postgres_data:/var/lib/postgresql/data
     networks:
       - evolution-net
+      - shared_web_network
 
 # ==========================================
 # Volumes & Networks
@@ -69,7 +72,7 @@ services:
 volumes:
   evolution_instances:
   evolution_redis:
-  mysql_data:
+  postgres_data: # Ganti dari mysql_data
 
 networks:
   evolution-net:

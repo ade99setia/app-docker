@@ -1,0 +1,20 @@
+services:
+  kubuntu_remote:
+    image: lscr.io/linuxserver/webtop:ubuntu-kde
+    container_name: kubuntu_remote
+    privileged: true
+    shm_size: "4gb"
+    ports:
+      - 9001:3001
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Asia/Jakarta
+      - TITLE=IDN_Solo
+      - CUSTOM_USER=idnsolo
+      - PASSWORD=Ande*0903
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./config:/config
+      - /home/idnsolo:/storage
+    restart: unless-stopped

@@ -13,6 +13,7 @@ services:
       - data_writable:/var/www/html/writable 
     networks:
       - undangan_pernikahan_network
+      - shared_web_network
     restart: unless-stopped
 
   # =========================
@@ -52,6 +53,7 @@ services:
       - data_db:/var/lib/mysql:rw
     networks:
       - undangan_pernikahan_network
+      - shared_web_network
     restart: unless-stopped
 
 # =========================
