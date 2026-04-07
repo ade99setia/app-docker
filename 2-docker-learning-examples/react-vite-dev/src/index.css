@@ -1,0 +1,95 @@
+:root {
+  --bg: #f3ede3;
+  --bg-strong: #d7e7f2;
+  --panel: rgba(255, 250, 243, 0.76);
+  --panel-border: rgba(75, 85, 99, 0.12);
+  --panel-shadow: 0 22px 60px rgba(15, 23, 42, 0.14);
+  --text: #1f2937;
+  --muted: #5b6472;
+  --accent: #c2410c;
+  --mono: 'Consolas', 'Courier New', monospace;
+  --sans: 'Trebuchet MS', 'Lucida Sans Unicode', 'Segoe UI', sans-serif;
+  --display: 'Georgia', 'Times New Roman', serif;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  color: var(--text);
+  font: 16px/1.6 var(--sans);
+  background:
+    radial-gradient(circle at top left, rgba(255, 255, 255, 0.85), transparent 28%),
+    radial-gradient(circle at bottom right, rgba(14, 165, 233, 0.22), transparent 24%),
+    linear-gradient(135deg, var(--bg), var(--bg-strong));
+}
+
+body::before,
+body::after {
+  content: '';
+  position: fixed;
+  z-index: 0;
+  width: 280px;
+  height: 280px;
+  border-radius: 50%;
+  filter: blur(30px);
+  pointer-events: none;
+}
+
+body::before {
+  top: -80px;
+  left: -70px;
+  background: rgba(251, 191, 36, 0.22);
+}
+
+body::after {
+  right: -90px;
+  bottom: -90px;
+  background: rgba(14, 165, 233, 0.18);
+}
+
+#root {
+  min-height: 100vh;
+}
+
+h1,
+h2,
+h3 {
+  margin: 0;
+  color: var(--text);
+}
+
+h1 {
+  margin-top: 14px;
+  font-family: var(--display);
+  font-size: clamp(2.8rem, 6vw, 5rem);
+  line-height: 0.96;
+  letter-spacing: -0.05em;
+}
+
+h2 {
+  font-family: var(--display);
+  font-size: clamp(1.8rem, 3vw, 2.4rem);
+  line-height: 1;
+}
+
+p,
+ol {
+  margin: 0;
+}
+
+code {
+  font-family: var(--mono);
+}

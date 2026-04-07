@@ -1,0 +1,21 @@
+services:
+  react-dev:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: adesetiawan_react_dev
+    user: "0:0" # karena host nya idnsolo bukan idnsolo_remote, maka user nya harus root (0:0)
+    working_dir: /app
+    ports:
+      - "18089:18089" #:18089 karena di vite.config.js sudah di set port nya 18089, maka di docker-compose.yml juga harus sama
+    environment:
+      CHOKIDAR_USEPOLLING: "true"
+      VITE_USE_POLLING: "true"
+    volumes:
+      - .:/app
+      - adesetiawan_react_node_modules:/app/node_modules
+    command: sh -c "npm install ; npm run dev"
+    # restart: unless-stopped
+
+volumes:
+  adesetiawan_react_node_modules:
