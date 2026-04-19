@@ -11,3 +11,5 @@ aic8800dc-main/
 *.zip
 *.tar
 *.tar.gz
+
+# cat ~/.git-credentials

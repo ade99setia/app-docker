@@ -1,0 +1,12 @@
+services:
+  vocechat:
+    image: privoce/vocechat-server:latest
+    container_name: vocechat
+    restart: always
+    ports:
+      - "3009:3000"
+    volumes:
+      - vocechat_data:/home/vocechat-server/data
+
+volumes:
+  vocechat_data:

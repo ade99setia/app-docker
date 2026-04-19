@@ -1,0 +1,40 @@
+x-face-scan-common: &face-scan-common
+  build: .
+  restart: always
+  env_file:
+    - .env
+  environment:
+    - PYTHONUNBUFFERED=1
+    - FORWARD_WEBHOOK_URL=https://idnsolo.com/api/iot/face-scan/auth/3/lFFkMi04oXwuAETrQwVEbQBjMqNuY3hZuWXTD4YGa0d0ee7f
+
+services:
+  face-scan-polling:
+    <<: *face-scan-common
+    container_name: face-scan-webhook-polling
+    profiles:
+      - polling
+    volumes:
+      # Mode polling menyimpan checkpoint sync terakhir.
+      - ./last_checkin_time.txt:/app/last_checkin_time.txt
+    environment:
+      - PYTHONUNBUFFERED=1
+      - FORWARD_WEBHOOK_URL=https://idnsolo.com/api/iot/face-scan/auth/3/lFFkMi04oXwuAETrQwVEbQBjMqNuY3hZuWXTD4YGa0d0ee7f
+      - FACE_SCAN_MODE=polling
+
+  face-scan-realtime:
+    <<: *face-scan-common
+    container_name: face-scan-webhook-realtime
+    profiles:
+      - realtime
+    ports:
+      - "8088:8088"
+    volumes:
+      # Mode realtime juga memakai checkpoint sync terakhir.
+      - ./last_checkin_time.txt:/app/last_checkin_time.txt
+    environment:
+      - PYTHONUNBUFFERED=1
+      - FORWARD_WEBHOOK_URL=https://idnsolo.com/api/iot/face-scan/auth/3/lFFkMi04oXwuAETrQwVEbQBjMqNuY3hZuWXTD4YGa0d0ee7f
+      - FACE_SCAN_MODE=realtime
+      - LISTEN_HOST=0.0.0.0
+      - LISTEN_PORT=8088
+      - EXPECTED_PATH=/api/hf/hf01

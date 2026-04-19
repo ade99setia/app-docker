@@ -1,0 +1,80 @@
+services:
+  # =========================
+  # App: PHP-FPM Laravel (Dev)
+  # =========================
+  app_idn_solo_dev:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev # Gunakan Dockerfile dev
+    container_name: idn_solo_app_dev
+    env_file:
+      - ./.env
+    volumes:
+      - .:/var/www/html # BIND MOUNT: Folder saat ini disambung langsung ke dalam docker
+    # Otomatis install composer dependencies dan jalankan php-fpm saat container up  
+    command: sh -c "composer install && php-fpm"  
+    networks:
+      - app_network_idn_solo_dev
+
+  # =========================
+  # Vite / Node (Untuk npm run dev)
+  # =========================
+  vite_idn_solo:
+    image: node:20-alpine
+    container_name: idn_solo_dev_vite
+    working_dir: /var/www/html
+    volumes:
+      - .:/var/www/html
+    ports:
+      - "5173:5173" # Port default Vite
+    # Otomatis install NPM dan jalankan Vite saat container up
+    command: sh -c "npm install && npm run dev"
+    networks:
+      - app_network_idn_solo_dev
+
+  # =========================
+  # Web: Nginx
+  # =========================
+  web_idn_solo_dev:
+    image: nginx:alpine
+    container_name: idn_solo_web_dev
+    ports:
+      - "18084:80"  # Akses web di port 5 digit (http://10.159.76.115:18084)
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - ./default.dev.conf:/etc/nginx/conf.d/default.conf
+      - .:/var/www/html  # Nginx juga butuh akses ke seluruh project untuk dev
+    depends_on:
+      - app_idn_solo_dev
+    networks:
+      - app_network_idn_solo_dev
+
+  # =========================
+  # Database: MySQL
+  # =========================
+
+  db_idn_solo_dev:
+    image: mysql:8.0
+    container_name: idn_solo_db_dev
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: idn_solo
+      MYSQL_USER: idn_solo_user
+      MYSQL_PASSWORD: strongpassword123
+    ports:
+      - "3334:3306"
+    volumes:
+      - db_data_dev:/var/lib/mysql
+    networks:
+      - app_network_idn_solo_dev
+
+# =========================
+# Networks & Volumes
+# =========================
+networks:
+  app_network_idn_solo_dev:
+    driver: bridge
+
+volumes:
+  db_data_dev: # Cukup DB saja yang pakai named volume di dev

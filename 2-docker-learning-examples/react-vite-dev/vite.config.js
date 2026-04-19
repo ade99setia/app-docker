@@ -6,7 +6,7 @@ export default defineConfig({
   plugins: [react()],
   server: {
     host: '0.0.0.0',
-    port: 18089,
+    port: 18089, // samakan dengan port di socker-compose.yml
     strictPort: true,
     watch:
       process.env.VITE_USE_POLLING === 'true'
