@@ -1,0 +1,14 @@
+services:
+  face-scan-camera-forwarder:
+    build: .
+    container_name: face-scan-camera-forwarder
+    restart: always
+    # network_mode: host agar container pakai IP host langsung
+    # sehingga kamera di LAN bisa menjangkau port 8089 di laptop/server
+    network_mode: host
+    env_file:
+      - .env
+    environment:
+      - PYTHONUNBUFFERED=1
+      - LISTEN_HOST=0.0.0.0
+      - LISTEN_PORT=8089

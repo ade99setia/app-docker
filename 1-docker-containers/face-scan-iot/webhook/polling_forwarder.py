@@ -16,7 +16,7 @@ from config_env import load_env_file
 load_env_file()
 
 
-DEVICE_IP = os.getenv("DEVICE_IP", "10.143.25.66")
+DEVICE_IP = os.getenv("DEVICE_IP", "192.168.51.249")
 WEBHOOK_URL = os.getenv(
     "FORWARD_WEBHOOK_URL",
     "https://idnsolo.com/api/iot/face-scan/auth/3/lFFkMi04oXwuAETrQwVEbQBjMqNuY3hZuWXTD4YGa0d0ee7f",
